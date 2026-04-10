@@ -5,10 +5,11 @@ import joblib
 from pathlib import Path
 from metalcancerai.modeling.pipeline import MetalCancerModel
 
-# Page Config
-st.set_page_config(page_title="MetalCancer AI", layout="wide")
+# Page Config - Updated name
+st.set_page_config(page_title="Heavy Metal DNA Damage AI", layout="wide")
 
-st.title("🔬 Metal-Induced Cancer Detection System")
+# Main Title - Updated name
+st.title("🔬 Heavy Metal Induced DNA Damage Detection System")
 st.markdown("---")
 
 # Load Model & Scaler
@@ -51,7 +52,7 @@ try:
         inflammation = st.checkbox("Inflammation")
 
     # Prediction Logic
-    if st.button("🚀 Run AI Diagnosis", use_container_width=True):
+    if st.button("🚀 Run DNA Damage Analysis", use_container_width=True):
         # Prepare Data
         input_dict = {
             'ip': [ip], 'ep': [ep], 'peak_width': [0.2], 'area': [area], 'baseline': [0.1],
@@ -74,14 +75,17 @@ try:
         res_col1, res_col2 = st.columns(2)
         
         with res_col1:
-            st.metric("Cancer Risk Score", f"{risk:.2f}%")
-            if risk > 70: st.error("HIGH RISK")
-            elif risk > 30: st.warning("MODERATE RISK")
-            else: st.success("LOW RISK")
+            st.metric("DNA Damage Risk Score", f"{risk:.2f}%")
+            if risk > 70: 
+                st.error("CRITICAL DAMAGE DETECTED")
+            elif risk > 30: 
+                st.warning("MODERATE DAMAGE DETECTED")
+            else: 
+                st.success("LOW/MINIMAL DAMAGE")
             
         with res_col2:
-            st.metric("Est. Time to Onset", f"{time} Months")
-            st.info("Continuous monitoring recommended.")
+            st.metric("Est. Time to Clinical Symptoms", f"{time} Months")
+            st.info("Continuous monitoring recommended based on DNA toxicity levels.")
 
 except Exception as e:
     st.error(f"Please run training first! Error: {e}")
