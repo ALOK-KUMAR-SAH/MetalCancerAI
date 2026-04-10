@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+models/*.pth
+models/*.joblib
+data/raw/*.csv
+.vscode/
