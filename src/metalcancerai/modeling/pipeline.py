@@ -2,46 +2,40 @@ import torch
 import torch.nn as nn
 
 class MetalCancerModel(nn.Module):
-    def __init__(self, input_dim: int):
-        """
-        Multi-Task Learning Model for Metal-Induced Cancer Detection.
-        
-        Args:
-            input_dim (int): Preprocessed features ki total count.
-        """
+    def __init__(self, input_dim):
         super(MetalCancerModel, self).__init__()
         
-        # 1. Shared Backbone: Common features seekhne ke liye
+        # Shared Layers (Backbone)
         self.shared_layers = nn.Sequential(
-            nn.Linear(input_dim, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(input_dim, 64),
             nn.ReLU(),
+            nn.BatchNorm1d(64),
             nn.Dropout(0.2),
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Dropout(0.1)
+            nn.Linear(64, 32),
+            nn.ReLU()
         )
         
-        # 2. Task-Specific Head A: Risk Score Prediction (Regression)
+        # Task 1: Risk Probability Head
         self.risk_head = nn.Sequential(
-            nn.Linear(64, 32),
+            nn.Linear(32, 16),
             nn.ReLU(),
-            nn.Linear(32, 1)
+            nn.Linear(16, 1)
         )
         
-        # 3. Task-Specific Head B: Months to Onset Prediction (Regression)
+        # Task 2: Time to Onset Head
         self.time_head = nn.Sequential(
-            nn.Linear(64, 32),
+            nn.Linear(32, 16),
             nn.ReLU(),
-            nn.Linear(32, 1)
+            nn.Linear(16, 1)
         )
 
-    def forward(self, x: torch.Tensor):
-        # Shared representations extract karein
+    def forward(self, x):
         shared_out = self.shared_layers(x)
         
-        # Alag-alag outputs generate karein
-        risk_score = self.risk_head(shared_out)
-        months_to_onset = self.time_head(shared_out)
+        # NEW: Constrain risk to 0-1 (will be multiplied by 100 in app)
+        risk_score = torch.sigmoid(self.risk_head(shared_out))
+        
+        # NEW: Constrain time to be positive (ReLU ensures it's >= 0)
+        months_to_onset = torch.relu(self.time_head(shared_out))
         
         return risk_score, months_to_onset
